@@ -6,12 +6,15 @@ const banner = document.querySelector(".app__image");
 const title = document.querySelector(".app__title");
 const buttons = document.querySelectorAll(".app__card-button");
 const startPauseBt = document.querySelector("#start-pause");
+const buttonPlayPause = document.querySelector("#start-pause span");
+const iconPlayPause = document.querySelector("#start-pause img");
+const screenTime = document.querySelector("#timer");
 const musicFocusInput = document.querySelector("#alternar-musica");
 const music = new Audio("./sons/luna-rise-part-one.mp3");
 const soundPlay = new Audio("./sons/play.wav");
 const soundPause = new Audio("./sons/pause.mp3");
 const soundEnd = new Audio("./sons/beep.mp3");
-let tempoDecorridoEmSegundos = 5;
+let tempoDecorridoEmSegundos = 1500;
 let intervaloId = null;
 music.loop = true;
 music.volume = 0.5;
@@ -25,21 +28,25 @@ musicFocusInput.addEventListener("change", () => {
 });
 
 focoBt.addEventListener("click", () => {
+  tempoDecorridoEmSegundos = 1500;
   alterarContexto("foco");
   focoBt.classList.add("active");
 });
 
 curtoBt.addEventListener("click", () => {
+  tempoDecorridoEmSegundos = 300;
   alterarContexto("descanso-curto");
   curtoBt.classList.add("active");
 });
 
 longoBt.addEventListener("click", () => {
+  tempoDecorridoEmSegundos = 900;
   alterarContexto("descanso-longo");
   longoBt.classList.add("active");
 });
 
 function alterarContexto(context) {
+  showTime();
   buttons.forEach(function (context) {
     context.classList.remove("active");
   });
@@ -80,7 +87,7 @@ const contagemRegressiva = () => {
     return;
   }
   tempoDecorridoEmSegundos -= 1;
-  console.log("Tempo: " + tempoDecorridoEmSegundos);
+  showTime();
 };
 
 startPauseBt.addEventListener("click", iniciarOuPausar);
@@ -93,9 +100,24 @@ function iniciarOuPausar() {
   }
   soundPlay.play();
   intervaloId = setInterval(contagemRegressiva, 1000);
+  buttonPlayPause.textContent = "Pausar";
+  iconPlayPause.setAttribute("src", "./imagens/pause.png");
 }
 
 function zerar() {
   clearInterval(intervaloId);
+  buttonPlayPause.textContent = "Começar";
+  iconPlayPause.setAttribute("src", "./imagens/play_arrow.png");
   intervaloId = null;
 }
+
+function showTime() {
+  const time = new Date(tempoDecorridoEmSegundos * 1000);
+  const formatedTime = time.toLocaleTimeString("pt-br", {
+    minute: "2-digit",
+    second: "2-digit",
+  });
+  screenTime.innerHTML = `${formatedTime}`;
+}
+
+showTime();
